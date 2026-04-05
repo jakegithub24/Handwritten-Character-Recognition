@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Predictions</title>
+    <style>
+        body {
+            margin:0;
+            font-family:Poppins, sans-serif;
+            background:#0f172a;
+            color:white;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width:220px;
+            height:100vh;
+            position:fixed;
+            background:#020617;
+            padding-top:20px;
+        }
+
+        .sidebar a {
+            display:block;
+            padding:12px;
+            color:white;
+            text-decoration:none;
+        }
+
+        .sidebar a:hover {
+            background:#22c55e;
+        }
+
+        /* Main */
+        .main {
+            margin-left:220px;
+            padding:20px;
+        }
+
+        /* Search */
+        .search {
+            margin-bottom:15px;
+        }
+
+        .search input {
+            padding:10px;
+            width:300px;
+            border-radius:8px;
+            border:none;
+        }
+
+        /* Table */
+        table {
+            width:100%;
+            border-collapse:collapse;
+        }
+
+        th, td {
+            padding:10px;
+            text-align:center;
+        }
+
+        th {
+            background:#020617;
+        }
+
+        tr:nth-child(even) {
+            background:#1e293b;
+        }
+
+        img {
+            width:50px;
+            height:50px;
+            border-radius:5px;
+        }
+
+        /* Buttons */
+        .btn-del {
+            background:red;
+            border:none;
+            padding:5px 10px;
+            color:white;
+            border-radius:5px;
+            cursor:pointer;
+            margin-right:5px;
+        }
+
+        .btn-view {
+            background:#22c55e;
+            border:none;
+            padding:5px 10px;
+            color:white;
+            border-radius:5px;
+            cursor:pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <a href="/admin_dashboard">📊 Dashboard</a>
+<a href="/admin_users">👥 Users</a>
+<a href="/admin/predictions">📜 Predictions</a> 
+</div>
+
+<div class="main">
+    <h1>📜 Predictions</h1>
+
+    <div class="search">
+        <input type="text" id="searchInput" placeholder="Search...">
+    </div>
+
+    <table id="predTable">
+        <tr>
+            <th>Seq</th>
+            <th>User</th>
+            <th>Digit</th>
+            <th>Confidence</th>
+            <th>Type</th>
+            <th>Image</th>
+            <th>Date</th>
+            <th>Action</th>
+        </tr>
+
+        {% for p in predictions %}
+        <tr>
+            <td>{{ loop.index }}</td>  <!-- Sequence number -->
+<td>{{ p.user_name }}</td>  <!-- Show username -->
+<td>{{ p.predicted_digit }}</td>
+<td>{{ p.confidence }}%</td>
+<td>{{ p.prediction_type }}</td>
+<td>
+    {% if p.image_path %}
+    <img src="/{{ p.image_path }}"> <!-- Correct image path -->
+    {% else %}
+    N/A
+    {% endif %}
+</td>
+<td>{{ p.created_at }}</td>
+<td>
+    <a href="/admin/view_user/{{ p.user_id }}">
+        <button class="btn-view">View User</button>
+    </a>
+    <!-- Delete button is a placeholder, route not implemented -->
+</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+
+<script>
+    let input = document.getElementById("searchInput");
+    input.addEventListener("keyup", function(){
+        let filter = input.value.toLowerCase();
+        let rows = document.querySelectorAll("#predTable tr");
+
+        rows.forEach((row, index) => {
+            if(index === 0) return;
+            let text = row.innerText.toLowerCase();
+            row.style.display = text.includes(filter) ? "" : "none";
+        });
+    });
+</script>
+
+</body>
+</html>

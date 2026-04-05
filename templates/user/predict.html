@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Predict Digit</title>
+    <style>
+        body{
+            background:#0f172a;
+            color:white;
+            font-family:Poppins, sans-serif;
+            margin:0;
+        }
+
+        .navbar{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            padding:10px 20px;
+            background:rgba(255,255,255,0.05);
+            backdrop-filter:blur(10px);
+        }
+
+        .dashboard-btn{
+            padding:6px 12px;
+            background:#22c55e;
+            border:none;
+            color:white;
+            border-radius:10px;
+            cursor:pointer;
+            font-size:14px;
+        }
+
+        .title{
+            font-size:22px;
+            font-weight:bold;
+            text-align:center;
+            flex:1;
+        }
+
+        .user-dropdown{
+            position: relative;
+            display: inline-block;
+        }
+
+        .user-dropdown button{
+            background:#22c55e;
+            padding:8px 15px;
+            border-radius:20px;
+            border:none;
+            color:white;
+            cursor:pointer;
+        }
+
+        .user-dropdown-content{
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: #1e293b;
+            min-width: 120px;
+            box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+            border-radius:10px;
+            z-index:1;
+        }
+
+        .user-dropdown-content a{
+            color:white;
+            padding:10px 15px;
+            text-decoration:none;
+            display:block;
+        }
+
+        .user-dropdown-content a:hover{
+            background-color:#22c55e;
+        }
+
+        .user-dropdown:hover .user-dropdown-content{
+            display:block;
+        }
+
+        .main-title{
+            text-align:center;
+            margin-top:40px;
+            font-size:28px;
+        }
+
+        .container{
+            display:flex;
+            justify-content:center;
+            gap:20px;
+            flex-wrap:wrap;
+            margin:40px;
+        }
+
+        .box{
+            background:#1e293b;
+            padding:20px;
+            border-radius:15px;
+            width:250px;
+            aspect-ratio:1/1;
+            display:flex;
+            flex-direction:column;
+            justify-content:center;
+            align-items:center;
+            transition:0.3s;
+        }
+
+        .box:hover{
+            background:#2c3a59;
+            transform:translateY(-5px);
+        }
+
+        .box h3{
+            margin-bottom:15px;
+        }
+
+        button{
+            margin-top:10px;
+            padding:8px 12px;
+            width:100%;
+            background:#22c55e;
+            border:none;
+            color:white;
+            border-radius:8px;
+            cursor:pointer;
+        }
+
+        canvas{
+            background:white;
+            margin-top:10px;
+            cursor:crosshair;
+        }
+
+        @media screen and (max-width:900px){
+            .container{
+                flex-direction:column;
+                align-items:center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+    <a href="/dashboard"><button>⬅Dashboard</button></a>
+    <div class="title">🕵️‍♂️ Digit Detective </div>
+</div>
+
+<div class="main-title">Predict Your Digit</div>
+
+<div class="container">
+    <!-- Upload -->
+    <div class="box">
+        <h3>📤 Upload Image</h3>
+        <input type="file" id="file">
+        <button onclick="upload()">Predict</button>
+    </div>
+
+    <!-- Draw -->
+    <div class="box">
+    <h3>✍ Draw Digit</h3>
+    <canvas id="canvas" width="200" height="200"></canvas>
+    <button onclick="predictCanvas()">Predict</button>
+    <button onclick="clearCanvas()">Clear</button>
+</div>
+
+    <!-- Voice -->
+    <div class="box">
+        <h3>🎤 Voice Input</h3>
+        <button onclick="voice()">Start</button>
+    </div>
+</div>
+
+<h3 id="result" style="text-align:center;"></h3>
+
+<script>
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+
+// Initialize canvas with white background
+ctx.fillStyle = "white";
+ctx.fillRect(0,0,canvas.width,canvas.height);
+
+// Brush settings
+ctx.strokeStyle = "black";
+ctx.lineWidth = 15;
+ctx.lineCap = "round";
+
+let drawing = false;
+
+// Drawing events
+canvas.onmousedown = () => drawing = true;
+canvas.onmouseup = () => { drawing = false; ctx.beginPath(); };
+canvas.onmouseleave = () => { drawing = false; ctx.beginPath(); };
+
+canvas.onmousemove = (e) => {
+    if(!drawing) return;
+    const rect = canvas.getBoundingClientRect();
+    ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+}
+
+// Clear canvas
+function clearCanvas(){
+    ctx.fillStyle = "white";
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+    ctx.fillStyle = "black";
+    ctx.beginPath();
+}
+
+// Predict from canvas
+function predictCanvas(){
+    let tmpCanvas = document.createElement('canvas');
+    tmpCanvas.width = 28;
+    tmpCanvas.height = 28;
+    let tmpCtx = tmpCanvas.getContext('2d');
+
+    tmpCtx.drawImage(canvas, 0, 0, 28, 28);
+
+    let dataURL = tmpCanvas.toDataURL();
+
+    fetch("/predict_canvas", {
+        method:"POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({image: dataURL})
+    })
+    .then(res => res.json())
+    .then(data => {
+        document.getElementById("result").innerText =
+        "Digit: "+data.digit+" | Confidence: "+data.confidence+"%";
+    });
+}
+// Upload image
+function upload(){
+    let file = document.getElementById("file").files[0];
+    if(!file){
+        alert("Please select a file");
+        return;
+    }
+    let formData = new FormData();
+    formData.append("image", file);
+
+    fetch("/predict", {method:"POST", body:formData})
+    .then(res=>res.json())
+    .then(data=>{
+        document.getElementById("result").innerText =
+        "Digit: "+data.digit+" | Confidence: "+data.confidence+"%";
+    });
+}
+
+// Voice placeholder
+function voice(){
+    let recognition = new webkitSpeechRecognition();
+    recognition.start();
+
+    recognition.onresult = function(e){
+        let text = e.results[0][0].transcript;
+        document.getElementById("result").innerText =
+        "You said: "+text;
+    }
+}
+</script>
+
+</body>
+</html>

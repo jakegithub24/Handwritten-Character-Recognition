@@ -1,0 +1,353 @@
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #061c24, #0f172a);
+    color: white;
+}
+
+
+/* 🔷 NAVBAR */
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 50px;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+}
+
+
+/* LOGO */
+
+.logo-section {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo {
+    width: 40px;
+}
+
+
+/* NAV LINKS */
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: white;
+    font-weight: 500;
+}
+
+.nav-links a i {
+    margin-right: 6px;
+    color: #00e5ff;
+}
+
+
+/* 🔹 ADMIN */
+
+.admin-dropdown {
+    position: relative;
+    cursor: pointer;
+}
+
+.admin-menu {
+    display: none;
+    position: absolute;
+    right: 0;
+    background: #1e293b;
+    padding: 10px;
+    border-radius: 8px;
+}
+
+
+/* 🔷 HERO */
+
+.hero {
+    display: flex;
+    padding: 60px;
+}
+
+
+/* LEFT */
+
+.left {
+    width: 50%;
+}
+
+.left h1 {
+    font-size: 45px;
+}
+
+.left p {
+    color: #ccc;
+}
+
+
+/* BUTTONS */
+
+button {
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    border: none;
+}
+
+.primary {
+    background: #00e5ff;
+    color: black;
+}
+
+.secondary {
+    border: 1px solid white;
+    background: transparent;
+    color: white;
+}
+
+
+/* STATS */
+
+.stats {
+    display: flex;
+    margin-top: 30px;
+}
+
+.box {
+    background: rgba(255, 255, 255, 0.08);
+    padding: 20px;
+    margin-right: 15px;
+    border-radius: 10px;
+}
+
+.glow:hover {
+    box-shadow: 0 0 15px #00e5ff;
+}
+
+
+/* RIGHT */
+
+.right {
+    width: 50%;
+}
+
+
+/* AI BOX */
+
+.ai-box {
+    background: linear-gradient(45deg, #00e5ff, #3b82f6);
+    padding: 25px;
+    border-radius: 15px;
+    color: black;
+    margin-bottom: 20px;
+    animation: float 3s infinite ease-in-out;
+}
+
+@keyframes float {
+    0% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+    100% {
+        transform: translateY(0px);
+    }
+}
+
+
+/* FEATURE GRID */
+
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+
+.feature {
+    background: rgba(255, 255, 255, 0.08);
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    transition: 0.3s;
+}
+
+.feature:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 10px #00e5ff;
+}
+
+
+/* TECH SECTION */
+
+.tech-section {
+    text-align: center;
+    padding: 50px;
+}
+
+.tech-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.tech-card {
+    background: rgba(255, 255, 255, 0.08);
+    padding: 20px;
+    border-radius: 10px;
+    transition: 0.3s;
+}
+
+.tech-card:hover {
+    transform: scale(1.1);
+}
+
+
+/* FOOTER */
+
+.footer {
+    background: #021c24;
+    padding: 20px;
+    text-align: center;
+}
+
+
+/* 🔹 REMOVE OLD LOGO IMAGE (optional) */
+
+.logo {
+    display: none;
+}
+
+
+/* 🔹 LOGO SECTION (ICON + TITLE) */
+
+.logo-section {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+
+/* 🔹 ICON STYLE */
+
+.logo-icon {
+    font-size: 26px;
+    color: #00e5ff;
+    transition: 0.3s;
+}
+
+
+/* 🔹 ICON HOVER EFFECT */
+
+.logo-icon:hover {
+    transform: scale(1.2);
+    text-shadow: 0 0 10px #00e5ff;
+}
+
+
+/* 🔹 TITLE STYLE */
+
+.logo-section h2 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+
+/* 🔥 NAVBAR HOVER EFFECT */
+
+.nav-links a {
+    position: relative;
+    transition: 0.3s;
+}
+
+.nav-links a:hover {
+    color: #00e5ff;
+}
+
+
+/* 🔥 UNDERLINE ANIMATION */
+
+.nav-links a::after {
+    content: "";
+    position: absolute;
+    width: 0%;
+    height: 2px;
+    background: #00e5ff;
+    left: 0;
+    bottom: -5px;
+    transition: 0.3s;
+}
+
+.nav-links a:hover::after {
+    width: 100%;
+}
+
+
+/* 🔥 ADMIN MENU IMPROVED */
+
+.admin-menu {
+    display: none;
+    position: absolute;
+    right: 0;
+    background: #1e293b;
+    padding: 10px;
+    border-radius: 8px;
+    min-width: 140px;
+}
+
+
+/* 🔥 ADMIN LINK STYLE */
+
+.admin-menu a {
+    display: block;
+    padding: 8px;
+    color: white;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.admin-menu a:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+}
+
+
+/* 🔥 NAVBAR STICKY (optional but best) */
+
+.navbar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+
+/* 🔥 SMOOTH BUTTON HOVER */
+
+button:hover {
+    transform: scale(1.05);
+    transition: 0.3s;
+}
+
+
+/* 🔥 HERO TEXT GLOW */
+
+.left h1 {
+    font-size: 45px;
+    text-shadow: 0 0 10px rgba(0, 229, 255, 0.3);
+}
+
+
+/* 🔥 FEATURE MORE SMOOTH */
+
+.feature {
+    transition: 0.3s ease-in-out;
+}

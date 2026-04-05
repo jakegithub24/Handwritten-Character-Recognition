@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Prediction History</title>
+    <style>
+        body{
+            background:#0f172a;
+            color:white;
+            font-family:Poppins;
+            padding:20px;
+        }
+
+        /* 🔷 NAVBAR */
+        .navbar{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            padding:10px 30px;
+            background:rgba(255,255,255,0.05);
+            backdrop-filter:blur(10px);
+            border-radius:10px;
+            margin-bottom:20px;
+        }
+
+        .navbar .logo{
+            font-size:22px;
+            font-weight:bold;
+            margin:auto; /* middle aligned */
+        }
+
+        .navbar a{
+            text-decoration:none;
+            color:white;
+            background:#22c55e;
+            padding:6px 12px;
+            border-radius:8px;
+            font-size:14px;
+        }
+
+        .table-container{
+            max-width: 95%;
+            margin: auto;
+            overflow-x: auto;
+        }
+
+        table{
+            width:100%;
+            border-collapse:collapse;
+            background:#1e293b;
+            border-radius:10px;
+            overflow:hidden;
+            min-width: 700px;
+        }
+
+        th,td{
+            padding:10px 8px;
+            text-align:center;
+        }
+
+        th{
+            background:#020617;
+        }
+
+        tr:nth-child(even){
+            background:#0f172a;
+        }
+
+        img{
+            width:50px;
+            height:50px;
+            border-radius:5px;
+            object-fit:cover;
+        }
+
+        .btn{
+            padding:5px 8px;
+            border:none;
+            border-radius:6px;
+            color:white;
+            cursor:pointer;
+            margin:2px;
+        }
+
+        .delete{
+            background:#ef4444;
+        }
+
+        .download{
+            background:#22c55e;
+        }
+
+        .empty{
+            text-align:center;
+            margin-top:50px;
+            color:#94a3b8;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="navbar">
+    <div></div> <!-- left empty -->
+    <div class="logo">📜 Prediction History</div>
+    <a href="/dashboard">⬅ Dashboard</a> <!-- right side button -->
+</div>
+
+<div class="table-container">
+{% if data %}
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Type</th>
+        <th>Image</th>
+        <th>Digit</th>
+        <th>Confidence</th>
+        <th>Date</th>
+        <th>Action</th>
+    </tr>
+
+    {% for row in data %}
+    <tr>
+    <td>{{ loop.index }}</td>  <!-- 🔹 ID बदला 1 पासून क्रमांकासाठी -->
+    <td>
+        {% if row.prediction_type == 'upload' %}
+            🖼️ Upload
+        {% elif row.prediction_type == 'draw' %}
+            ✍️ Draw
+        {% elif row.prediction_type == 'voice' %}
+            🎤 Voice
+        {% else %}
+            ❓ Unknown
+        {% endif %}
+    </td>
+    <td>
+        <img src="/{{ row.image_path }}">
+    </td>
+    <td>{{ row.predicted_digit }}</td>
+    <td>{{ row.confidence }}</td>
+    <td>{{ row.created_at }}</td>
+    <td>
+        <a href="/download/{{ row.image_path }}">
+            <button class="btn download">⬇ Download</button>
+        </a>
+        <a href="/delete/{{ row.id }}">
+            <button class="btn delete">🗑️ Delete</button>
+        </a>
+    </td>
+</tr>
+    {% endfor %}
+</table>
+{% else %}
+<div class="empty">
+    😔 No Predictions Yet
+</div>
+{% endif %}
+</div>
+
+</body>
+</html>

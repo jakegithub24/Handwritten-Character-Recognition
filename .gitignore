@@ -1,0 +1,62 @@
+# Python environments
+myvenv/
+venv/
+env/
+ENV/
+.venv
+*.pyc
+__pycache__/
+*.egg-info/
+dist/
+build/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Database
+database/
+*.db
+*.sqlite
+*.sqlite3
+
+# Model files
+model/*.h5
+model/__pycache__/
+
+# Uploads and temporary files
+uploads/
+static/uploads/
+static/css/*.map
+static/js/*.map
+*.tmp
+.cache/
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Virtual environment specific
+lib/
+lib64/
+include/
+share/
+pyvenv.cfg
+*.cfg
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Flask
+instance/
+.webassets-cache

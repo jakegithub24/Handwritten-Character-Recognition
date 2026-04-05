@@ -1,0 +1,170 @@
+body {
+    margin: 0;
+    font-family: Poppins;
+    display: flex;
+    background: #0f172a;
+    color: white;
+}
+
+
+/* SIDEBAR */
+
+.sidebar {
+    width: 220px;
+    height: 100vh;
+    background: #020617;
+    padding: 20px;
+}
+
+.sidebar a {
+    display: block;
+    padding: 10px;
+    color: #cbd5e1;
+    text-decoration: none;
+    border-radius: 8px;
+}
+
+.sidebar a:hover,
+.active {
+    background: #1e293b;
+}
+
+
+/* MAIN */
+
+.main {
+    flex: 1;
+    padding: 20px;
+}
+
+
+/* TOPBAR */
+
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #020617;
+    padding: 15px;
+    border-radius: 10px;
+}
+
+.top-right {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+
+/* USER BUTTON */
+
+.user-btn {
+    background: #1e293b;
+    padding: 8px 15px;
+    border-radius: 8px;
+    font-weight: bold;
+}
+
+
+/* LOGOUT */
+
+.logout-btn {
+    background: #ef4444;
+    padding: 8px 15px;
+    border-radius: 8px;
+    text-decoration: none;
+    color: white;
+}
+
+
+/* CARDS */
+
+.cards {
+    display: flex;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.card {
+    flex: 1;
+    background: #1e293b;
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+}
+
+button {
+    margin-top: 10px;
+    padding: 10px;
+    border: none;
+    background: #22c55e;
+    color: white;
+    border-radius: 8px;
+}
+
+
+/* PREVIEW */
+
+.preview {
+    margin-top: 20px;
+    background: #1e293b;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+
+/* STATS */
+
+.stats {
+    display: flex;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.box {
+    flex: 1;
+    background: #1e293b;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+
+/* EXTRA */
+
+.extra {
+    display: flex;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.extra-card {
+    flex: 1;
+    background: #1e293b;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+
+/* TRAIN */
+
+.train {
+    margin-top: 20px;
+    background: #1e293b;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+
+/* ACTIVITY */
+
+.activity {
+    margin-top: 20px;
+    background: #1e293b;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.active {
+    color: lightgreen;
+}

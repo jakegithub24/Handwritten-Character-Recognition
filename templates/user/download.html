@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Download</title>
+
+    <style>
+        body{
+            background:#0f172a;
+            color:white;
+            font-family:Poppins;
+            text-align:center;
+            padding:20px;
+        }
+
+        /* 🔹 NAVBAR */
+        .navbar{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            padding:15px 40px;
+            background:rgba(255,255,255,0.05);
+            backdrop-filter:blur(10px);
+            margin-bottom:30px;
+        }
+
+        .navbar-title{
+            font-size:22px;
+            font-weight:bold;
+            flex:1;
+            text-align:center;
+        }
+
+        .navbar-right button{
+            background:#22c55e;
+            padding:8px 15px;
+            border-radius:20px;
+            border:none;
+            color:white;
+            cursor:pointer;
+        }
+
+        h2{
+            margin-bottom:30px;
+        }
+
+        /* 🔹 MAIN CHANGE (HORIZONTAL LAYOUT) */
+        .container{
+            display:flex;
+            justify-content:center;
+            gap:20px;
+            flex-wrap:wrap;
+        }
+
+        .box{
+            background:#1e293b;
+            padding:20px;
+            width:220px;
+            border-radius:12px;
+            text-align:center;
+            transition:0.3s;
+        }
+
+        /* 🔹 HOVER EFFECT */
+        .box:hover{
+            transform:scale(1.05);
+            background:#334155;
+        }
+
+        button{
+            padding:10px;
+            background:#22c55e;
+            border:none;
+            color:white;
+            border-radius:8px;
+            cursor:pointer;
+            width:100%;
+            font-weight:bold;
+        }
+
+        input, select{
+            padding:8px;
+            margin:5px;
+            width:90%;
+            border-radius:6px;
+            border:none;
+        }
+
+        form{
+            margin-top:10px;
+        }
+
+        .box h3{
+            margin-bottom:10px;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- 🔹 NAVBAR -->
+<div class="navbar">
+    <div class="navbar-left"></div>
+    <div class="navbar-title">⬇ Download Data</div>
+    <div class="navbar-right">
+        <a href="/dashboard"><button>⬅ Dashboard</button></a>
+    </div>
+</div>
+
+<!-- 🔹 WRAP ALL BOXES INSIDE CONTAINER -->
+<div class="container">
+
+    <!-- CSV -->
+    <div class="box">
+        <h3>Download All Data</h3>
+        <a href="/download_csv">
+            <button>Download CSV</button>
+        </a>
+    </div>
+
+    <!-- Date Filter -->
+    <div class="box">
+        <h3>Filter by Date</h3>
+        <form action="/download_filtered" method="POST">
+            <input type="date" name="start" placeholder="Start Date"><br>
+            <input type="date" name="end" placeholder="End Date"><br>
+            <button type="submit">Download</button>
+        </form>
+    </div>
+
+    <!-- Type & Digit Filter -->
+    <div class="box">
+        <h3>Filter by Type / Digit</h3>
+        <form action="/download_filtered_type" method="POST">
+            <select name="type">
+                <option value="all">All Types</option>
+                <option value="draw">Draw</option>
+                <option value="image">Image</option>
+                <option value="voice">Voice</option>
+            </select><br>
+            <input type="number" name="digit" placeholder="Digit (0-9)"><br>
+            <button type="submit">Download</button>
+        </form>
+    </div>
+
+    <!-- Images -->
+    <div class="box">
+        <h3>Download Images</h3>
+        <a href="/download_images">
+            <button>Download ZIP</button>
+        </a>
+    </div>
+
+    <!-- Report -->
+    <div class="box">
+        <h3>Download Report</h3>
+        <a href="/download_report">
+            <button>Download PDF</button>
+        </a>
+    </div>
+
+</div>
+
+</body>
+</html>

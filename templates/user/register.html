@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Register</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <!-- ICONS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body>
+
+<div class="container">
+
+    <form action="/register" method="post" class="form-box">
+
+        <h2><i class="fa-solid fa-user-plus"></i> Create Account</h2>
+
+        <p class="tagline">Start your AI journey 🚀</p>
+
+        <!-- MESSAGE -->
+        {% if message == "success" %}
+            <div class="success-msg">✅ Registration Successful!</div>
+        {% elif message == "already" %}
+            <div class="success-msg" style="background:#dc2626;">
+                ❌ Already Registered!
+            </div>
+        {% endif %}
+
+        <!-- NAME -->
+        <div class="input-box">
+            <i class="fa fa-user"></i>
+            <input name="name" type="text" placeholder="Enter Name" required>
+        </div>
+
+        <!-- EMAIL -->
+        <div class="input-box">
+            <i class="fa fa-envelope"></i>
+            <input name="email" type="email" placeholder="Enter Email" required>
+        </div>
+
+        <!-- PASSWORD (FIXED) -->
+        <div class="input-box">
+            <i class="fa fa-lock"></i>
+
+            <input id="password" name="password" type="password" placeholder="Enter Password" required>
+
+            <i class="fa fa-eye toggle-pass" onclick="togglePassword()"></i>
+        </div>
+
+        <!-- BUTTON -->
+        <button type="submit">Register</button>
+
+        <p class="link-text">
+            Already have an account? <a href="/login_page">Login</a>
+        </p>
+
+    </form>
+
+</div>
+
+<!-- JS -->
+<script>
+function togglePassword() {
+    var x = document.getElementById("password");
+    x.type = (x.type === "password") ? "text" : "password";
+}
+</script>
+
+</body>
+</html>

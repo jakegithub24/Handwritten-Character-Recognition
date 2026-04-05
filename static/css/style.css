@@ -1,0 +1,433 @@
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: #c8dcff;
+}
+
+
+/* Navbar */
+
+.navbar {
+    background: #4a6cf7;
+    padding: 15px;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+}
+
+.navbar a {
+    color: white;
+    margin-left: 15px;
+    text-decoration: none;
+}
+
+
+/* Container */
+
+.container {
+    width: 80%;
+    margin: auto;
+    margin-top: 50px;
+}
+
+
+/* Card */
+
+.card {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.2);
+}
+
+
+/* Form */
+
+input,
+button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+}
+
+button {
+    background: #4a6cf7;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #3451d1;
+}
+
+
+/* Table */
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+}
+
+.tech-section {
+    padding: 60px;
+    text-align: center;
+    color: white;
+}
+
+.tech-container {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+    margin-top: 30px;
+}
+
+.tech-card {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 20px;
+    border-radius: 12px;
+    width: 220px;
+    transition: 0.3s;
+}
+
+.tech-card:hover {
+    transform: translateY(-10px);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.footer {
+    background: #021c24;
+    padding: 40px;
+    text-align: center;
+    color: white;
+    margin-top: 50px;
+}
+
+.footer-links {
+    margin: 20px 0;
+}
+
+.footer-links a {
+    color: #00d9ff;
+    margin: 0 15px;
+    text-decoration: none;
+}
+
+.footer-links a:hover {
+    text-decoration: underline;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial;
+    background: linear-gradient(to right, #001f3f, #003366);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+/* 🔹 Container */
+
+.login-container {
+    width: 100%;
+    max-width: 350px;
+}
+
+
+/* 🔹 Form */
+
+.login-form {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+
+/* 🔹 Heading */
+
+.login-form h2 {
+    margin-bottom: 10px;
+}
+
+
+/* 🔹 Inputs */
+
+.login-form input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+
+/* 🔹 Button */
+
+.login-form button {
+    width: 100%;
+    padding: 10px;
+    background: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.login-form button:hover {
+    background: #0056b3;
+}
+
+
+/* 🔹 Link */
+
+.link-text {
+    margin-top: 10px;
+}
+
+.link-text a {
+    color: blue;
+    text-decoration: none;
+}
+
+.login-form h3 {
+    margin-bottom: 5px;
+    color: #007BFF;
+}
+
+.tagline {
+    font-size: 14px;
+    color: gray;
+    margin-bottom: 10px;
+}
+
+.footer-text {
+    margin-top: 15px;
+    font-size: 12px;
+    color: gray;
+}
+
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #0f172a, #020617);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+}
+
+
+/* 🔥 BACKGROUND GLOW */
+
+body::before {
+    content: "";
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    background: #00e5ff;
+    filter: blur(150px);
+    top: 10%;
+    left: 10%;
+    opacity: 0.3;
+}
+
+body::after {
+    content: "";
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    background: #3b82f6;
+    filter: blur(150px);
+    bottom: 10%;
+    right: 10%;
+    opacity: 0.3;
+}
+
+
+/* 🔷 FORM CONTAINER */
+
+.container {
+    position: relative;
+    z-index: 1;
+}
+
+
+/* 🔥 GLASS FORM */
+
+.form-box {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 40px;
+    border-radius: 15px;
+    backdrop-filter: blur(15px);
+    width: 320px;
+    text-align: center;
+    box-shadow: 0 0 25px rgba(0, 229, 255, 0.2);
+}
+
+
+/* TITLE */
+
+.form-box h2 {
+    margin-bottom: 10px;
+}
+
+
+/* TAGLINE */
+
+.tagline {
+    color: #aaa;
+    margin-bottom: 20px;
+}
+
+
+/* INPUT BOX */
+
+.input-box {
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.08);
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 8px;
+}
+
+.input-box i {
+    margin-right: 10px;
+    color: #00e5ff;
+}
+
+.input-box input {
+    border: none;
+    background: none;
+    outline: none;
+    color: white;
+    width: 100%;
+}
+
+
+/* INPUT FOCUS */
+
+.input-box:focus-within {
+    box-shadow: 0 0 10px #00e5ff;
+}
+
+
+/* SHOW PASSWORD */
+
+.show-pass {
+    font-size: 14px;
+    display: block;
+    margin: 10px 0;
+}
+
+
+/* BUTTON */
+
+button {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    background: #00e5ff;
+    color: black;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: 0.3s;
+}
+
+button:hover {
+    transform: scale(1.05);
+}
+
+
+/* LINK */
+
+.link-text {
+    margin-top: 15px;
+}
+
+.link-text a {
+    color: #00e5ff;
+    text-decoration: none;
+}
+
+
+/* SUCCESS MESSAGE */
+
+.success-msg {
+    background: #16a34a;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    animation: fadeIn 1s ease-in-out;
+}
+
+
+/* ANIMATION */
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+
+/* 🔥 MAIN LAYOUT (LEFT FORM + RIGHT MESSAGE) */
+
+.main-container {
+    width: 90%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+
+/* LEFT FORM */
+
+.form-box {
+    width: 350px;
+}
+
+
+/* RIGHT MESSAGE BOX */
+
+.message-box {
+    width: 300px;
+    padding: 20px;
+    border-radius: 10px;
+    font-size: 18px;
+    text-align: center;
+}
+
+
+/* SUCCESS */
+
+.success-msg {
+    background: #16a34a;
+    padding: 15px;
+    border-radius: 10px;
+}
+
+
+/* ERROR */
+
+.error-msg {
+    background: #dc2626;
+    padding: 15px;
+    border-radius: 10px;
+}

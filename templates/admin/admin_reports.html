@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Reports</title>
+
+    <style>
+        body {
+            font-family: Poppins, sans-serif;
+            background:#0f172a;
+            color:white;
+            margin:0;
+        }
+
+        /* 🔷 Sidebar */
+        .sidebar {
+            width:220px;
+            height:100vh;
+            position:fixed;
+            background:#020617;
+            padding-top:20px;
+        }
+
+        .sidebar a {
+            display:block;
+            padding:12px;
+            color:white;
+            text-decoration:none;
+        }
+
+        .sidebar a:hover {
+            background:#22c55e;
+        }
+
+        /* 🔷 Main */
+        .main {
+            margin-left:220px;
+            padding:20px;
+        }
+
+        /* 🔍 Search */
+        .search input {
+            padding:10px;
+            width:300px;
+            border-radius:8px;
+            border:none;
+            margin-top:15px;
+            outline:none;
+        }
+
+        /* 🔷 Table container */
+        .table-container {
+            max-height:500px;
+            overflow-y:auto;
+            margin-top:20px;
+            border-radius:10px;
+        }
+
+        /* 🔷 Table */
+        table {
+            width:100%;
+            border-collapse:collapse;
+        }
+
+        th, td {
+            padding:10px;
+            text-align:center;
+        }
+
+        th {
+            background:#020617;
+            position:sticky;
+            top:0;
+            z-index:2;
+        }
+
+        tr:nth-child(even) {
+            background:#1e293b;
+        }
+
+        tr:hover {
+            background:#334155;
+        }
+
+        /* 🔷 Image */
+        img {
+            width:50px;
+            height:50px;
+            border-radius:5px;
+            transition:0.3s;
+        }
+
+        img:hover {
+            transform:scale(2); /* 🔥 zoom effect */
+        }
+
+        /* 🔷 Buttons */
+        .btn-del {
+            background:#ef4444;
+            border:none;
+            padding:6px 10px;
+            color:white;
+            border-radius:6px;
+            cursor:pointer;
+        }
+
+        .btn-view {
+            background:#22c55e;
+            border:none;
+            padding:6px 10px;
+            color:white;
+            border-radius:6px;
+            cursor:pointer;
+            margin-right:5px;
+        }
+
+        .btn-del:hover { background:#dc2626; }
+        .btn-view:hover { background:#16a34a; }
+
+        /* 🔥 BUTTON BASE */
+.btn{
+    padding:6px 12px;
+    border-radius:6px;
+    text-decoration:none;
+    font-size:13px;
+    font-weight:500;
+    margin-right:5px;
+    display:inline-block;
+    transition:0.3s;
+}
+
+/* 🔵 VIEW (BLUE) */
+.view-btn{
+    background:#3b82f6;
+    color:white;
+}
+.view-btn:hover{
+    background:#2563eb;
+}
+
+/* 🔴 DELETE (RED) */
+.delete-btn{
+    background:#ef4444;
+    color:white;
+}
+.delete-btn:hover{
+    background:#dc2626;
+}
+
+/* 🟢 DOWNLOAD (GREEN) */
+.download-btn{
+    background:#22c55e;
+    color:white;
+}
+.download-btn:hover{
+    background:#16a34a;
+}
+
+    </style>
+</head>
+
+<body>
+
+<div class="sidebar">
+    <a href="{{ url_for('admin_dashboard') }}">📊 Dashboard</a>
+    <a href="{{ url_for('admin_users') }}">👥 Users</a>
+    <a href="{{ url_for('admin_analytics') }}">📈 Analytics</a>
+    <a href="{{ url_for('admin_reports') }}">📝 Reports</a>
+    <a href="{{ url_for('admin_logout') }}">🚪 Logout</a>
+</div>
+
+<div class="main">
+    <h1>📝 Reports</h1>
+
+    <!-- 🔍 Search -->
+    <div class="search">
+        <input type="text" id="searchInput" placeholder="Search user / digit...">
+    </div>
+
+    <!-- 🔷 Table -->
+    <div class="table-container">
+        <table id="reportTable">
+            <tr>
+                <th>Id</th>
+                <th>User</th>
+                <th>Digit</th>
+                <th>Confidence</th>
+                <th>Type</th>
+                <th>Image</th>
+                <th>Date</th>
+                <th>Action</th>
+            </tr>
+
+            {% for p in predictions %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ p.user_name }}</td>
+                <td>{{ p.predicted_digit }}</td>
+                <td>{{ p.confidence }}%</td>
+                <td>{{ p.prediction_type }}</td>
+                <td>
+                    {% if p.image_path %}
+                    <img src="/{{ p.image_path }}">
+                    {% else %} N/A {% endif %}
+                </td>
+                <td>{{ p.created_at.strftime("%d-%m-%Y %H:%M") }}</td>
+                <td>
+    <a href="/view_user/{{ p.user_id }}" class="btn view-btn">View</a>
+
+    <a href="/admin/delete_prediction/{{ p.id }}" 
+       class="btn delete-btn"
+       onclick="return confirm('Delete this?')">
+       Delete
+    </a>
+
+    <a href="/admin/download_prediction/{{ p.id }}" 
+       class="btn download-btn">
+       Download
+    </a>
+</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+</div>
+
+<script>
+    let input = document.getElementById("searchInput");
+
+    input.addEventListener("keyup", function(){
+        let filter = input.value.toLowerCase();
+        let rows = document.querySelectorAll("#reportTable tr");
+
+        rows.forEach((row, index) => {
+            if(index === 0) return;
+
+            let text = row.innerText.toLowerCase();
+            row.style.display = text.includes(filter) ? "" : "none";
+        });
+    });
+</script>
+
+</body>
+</html>

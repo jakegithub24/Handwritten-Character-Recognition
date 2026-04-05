@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="glass-card">
+    <h2>🏆 Top Predictions</h2>
+
+    <h3>Most Frequent Digits</h3>
+    <table>
+        <tr>
+            <th>Digit</th>
+            <th>Count</th>
+        </tr>
+        {% for row in top_digits %}
+        <tr>
+            <td>{{ row.predicted_digit }}</td>
+            <td>{{ row.count }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <h3>Highest Confidence</h3>
+    <table>
+        <tr>
+            <th>Digit</th>
+            <th>Confidence (%)</th>
+            <th>Type</th>
+            <th>Date</th>
+        </tr>
+        {% for row in top_conf %}
+        <tr>
+            <td>{{ row.predicted_digit }}</td>
+            <td>{{ row.confidence }}</td>
+            <td>{{ row.prediction_type }}</td>
+            <td>{{ row.created_at }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+{% endblock %}

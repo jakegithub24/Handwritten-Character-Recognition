@@ -1,0 +1,120 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #0f172a, #1e3a8a);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+/* TITLE */
+
+.top-title {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 22px;
+    color: #00e5ff;
+    font-weight: bold;
+}
+
+
+/* FORM BOX */
+
+.form-box {
+    width: 320px;
+    padding: 30px;
+    border-radius: 15px;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(12px);
+    text-align: center;
+    color: white;
+    box-shadow: 0 0 20px rgba(0, 229, 255, 0.3);
+}
+
+
+/* INPUT BOX FIX */
+
+.input-box {
+    position: relative;
+    width: 100%;
+    margin: 15px 0;
+}
+
+.input-box input {
+    width: 100%;
+    padding: 10px 40px 10px 35px;
+    border-radius: 8px;
+    border: none;
+    outline: none;
+    box-sizing: border-box;
+    /* 🔥 IMPORTANT FIX */
+}
+
+
+/* ICON LEFT */
+
+.input-box i.fa-user,
+.input-box i.fa-lock {
+    position: absolute;
+    left: 10px;
+    top: 12px;
+    color: #aaa;
+}
+
+
+/* ICON RIGHT */
+
+.toggle-pass {
+    position: absolute;
+    right: 10px;
+    top: 12px;
+    cursor: pointer;
+    color: #aaa;
+}
+
+
+/* BUTTON */
+
+button {
+    width: 100%;
+    padding: 10px;
+    background: #00e5ff;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+
+/* ERROR */
+
+.error-box {
+    background: #dc2626;
+    padding: 8px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+}
+
+
+/* BACK BUTTON */
+
+.back-btn {
+    display: block;
+    margin-top: 12px;
+    color: #00e5ff;
+    text-decoration: none;
+}
+
+
+/* TAGLINE */
+
+.tagline {
+    font-size: 13px;
+    color: #ccc;
+}

@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="glass-card">
+    <h2><i class="fas fa-user-circle"></i> My Profile</h2>
+    <form method="POST" id="updateNameForm">
+        <label>Name</label>
+        <input type="text" name="name" value="{{ user.name }}" required>
+        <button type="submit">Update Name</button>
+    </form>
+
+    <hr>
+
+    <h3>Change Password</h3>
+    <form id="changePwdForm">
+        <input type="password" name="old_password" placeholder="Current Password" required>
+        <input type="password" name="new_password" placeholder="New Password" required>
+        <button type="submit">Change Password</button>
+    </form>
+
+    <hr>
+
+    <h3>Danger Zone</h3>
+    <button id="deleteAccountBtn" class="danger-btn">Delete My Account</button>
+</div>
+
+<script>
+    document.getElementById('changePwdForm').onsubmit = async (e) => {
+        e.preventDefault();
+        let formData = new FormData(e.target);
+        let res = await fetch('/change_password', {method: 'POST', body: formData});
+        let data = await res.json();
+        alert(data.error || 'Password changed successfully!');
+    };
+    document.getElementById('deleteAccountBtn').onclick = async () => {
+        if (confirm('Permanently delete your account? All predictions will be lost.')) {
+            let res = await fetch('/delete_account', {method: 'POST'});
+            let data = await res.json();
+            if (data.success) window.location.href = '/';
+        }
+    };
+</script>
+{% endblock %}

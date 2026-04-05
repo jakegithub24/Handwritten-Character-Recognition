@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Users</title>
+
+<style>
+body{
+    margin:0;
+    font-family:Poppins;
+    background:#0f172a;
+    color:white;
+}
+
+/* SIDEBAR */
+.sidebar{
+    width:220px;
+    height:100vh;
+    position:fixed;
+    background:#020617;
+    padding-top:20px;
+}
+
+.sidebar a{
+    display:block;
+    padding:12px;
+    color:white;
+    text-decoration:none;
+}
+
+.sidebar a:hover{
+    background:#22c55e;
+}
+
+/* MAIN */
+.main{
+    margin-left:220px;
+    padding:20px;
+}
+
+/* SEARCH */
+.search-box{
+    margin-bottom:20px;
+}
+
+.search-box input{
+    padding:10px;
+    width:300px;
+    border-radius:8px;
+    border:none;
+}
+
+/* TABLE */
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+th,td{
+    padding:12px;
+    text-align:center;
+}
+
+th{
+    background:#020617;
+}
+
+tr:nth-child(even){
+    background:#1e293b;
+}
+
+/* BUTTON */
+.btn-delete{
+    background:red;
+    padding:6px 10px;
+    border:none;
+    color:white;
+    border-radius:5px;
+    cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+    <a href="/admin_dashboard">📊 Dashboard</a>
+    <a href="/admin_users">👥 Users</a>
+    <a href="/admin_predictions">📜 Predictions</a>
+    <a href="/admin_logout">🚪 Logout</a>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+<h1>👥 Users Management</h1>
+
+<h3>Total Users: {{ users|length }}</h3>
+
+<!-- SEARCH -->
+<div class="search-box">
+<input type="text" id="searchInput" placeholder="Search user...">
+</div>
+
+<!-- TABLE -->
+<table id="userTable">
+
+<tr>
+<th>ID</th>
+<th>Name</th>
+<th>Email</th>
+<th>Joined</th>
+<th>Action</th>
+</tr>
+
+{% for u in users %}
+<tr>
+<td>{{ u.id }}</td>
+<td>{{ u.name }}</td>
+<td>{{ u.email }}</td>
+<td>{{ u.created_at }}</td>
+<td>
+    <a href="/view_user/{{ u.id }}">
+        <button style="background:#3b82f6;color:white;border:none;padding:6px 10px;border-radius:5px;cursor:pointer;">
+            View
+        </button>
+    </a>
+
+    <a href="/delete_user/{{ u.id }}">
+        <button class="btn-delete">
+            Delete
+        </button>
+    </a>
+</td>
+</tr>
+{% endfor %}
+
+</table>
+
+</div>
+
+<script>
+let input = document.getElementById("searchInput");
+
+input.addEventListener("keyup", function(){
+    let filter = input.value.toLowerCase();
+    let rows = document.querySelectorAll("#userTable tr");
+
+    rows.forEach((row, index) => {
+        if(index === 0) return;
+        let text = row.innerText.toLowerCase();
+        row.style.display = text.includes(filter) ? "" : "none";
+    });
+});
+</script>
+
+</body>
+</html>
