@@ -1,148 +1,92 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Admin Settings</title>
+{% extends "admin/base_admin.html" %}
 
-    <style>
-        body {
-            margin:0;
-            font-family: 'Poppins', sans-serif;
-            background:#0f172a;
-            color:white;
-        }
+{% block title %}Admin Settings{% endblock %}
 
-        /* Sidebar */
-        .sidebar {
-            width:220px;
-            height:100vh;
-            position:fixed;
-            background:#020617;
-            padding-top:20px;
-        }
+{% block nav_settings %}active{% endblock %}
 
-        .sidebar a {
-            display:block;
-            padding:12px 18px;
-            color:#cbd5f5;
-            text-decoration:none;
-            transition:0.3s;
-        }
+{% block extra_styles %}
+<style>
+    .settings-card {
+        background: #1e293b;
+        padding: 30px;
+        border-radius: 12px;
+        max-width: 500px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
 
-        .sidebar a:hover {
-            background:#22c55e;
-            color:white;
-        }
+    .form-group {
+        margin-bottom: 20px;
+    }
 
-        /* Main */
-        .main {
-            margin-left:220px;
-            padding:30px;
-        }
+    .success-message {
+        background: #064e3b;
+        color: #22c55e;
+        padding: 12px;
+        border-radius: 6px;
+        margin-bottom: 20px;
+        border-left: 4px solid #22c55e;
+    }
 
-        h1 {
-            margin-bottom:20px;
-        }
+    .error-message {
+        background: #7f1d1d;
+        color: #ef4444;
+        padding: 12px;
+        border-radius: 6px;
+        margin-bottom: 20px;
+        border-left: 4px solid #ef4444;
+    }
 
-        /* Card */
-        .card {
-            background:#1e293b;
-            padding:25px;
-            border-radius:12px;
-            width:400px;
-            box-shadow:0 0 15px rgba(0,0,0,0.4);
-        }
+    button {
+        width: 100%;
+        padding: 12px;
+        background: #22c55e;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.3s;
+    }
 
-        label {
-            display:block;
-            margin-top:15px;
-            font-size:14px;
-            color:#94a3b8;
-        }
+    button:hover {
+        background: #16a34a;
+        transform: translateY(-2px);
+    }
+</style>
+{% endblock %}
 
-        input {
-            width:100%;
-            padding:10px;
-            margin-top:5px;
-            border-radius:6px;
-            border:none;
-            outline:none;
-            background:#0f172a;
-            color:white;
-        }
+{% block content %}
 
-        input:focus {
-            border:1px solid #22c55e;
-        }
+<h1>⚙️ Admin Settings</h1>
 
-        button {
-            margin-top:20px;
-            width:100%;
-            padding:12px;
-            border:none;
-            border-radius:8px;
-            background:#22c55e;
-            color:white;
-            font-size:15px;
-            cursor:pointer;
-            transition:0.3s;
-        }
+<div class="settings-card">
 
-        button:hover {
-            background:#16a34a;
-        }
+    {% if message %}
+    <div class="success-message">{{ message }}</div>
+    {% endif %}
 
-        .message {
-            margin-bottom:15px;
-            padding:10px;
-            background:#064e3b;
-            border-radius:6px;
-            color:#22c55e;
-        }
-    </style>
+    <form method="POST">
 
-</head>
-
-<body>
-
-<!-- Sidebar -->
-<div class="sidebar">
-    <a href="{{ url_for('admin_dashboard') }}">📊 Dashboard</a>
-    <a href="{{ url_for('admin_users') }}">👥 Users</a>
-    <a href="{{ url_for('admin_analytics') }}">📈 Analytics</a>
-    <a href="{{ url_for('admin_reports') }}">📝 Reports</a>
-    <a href="{{ url_for('admin_settings') }}">⚙️ Settings</a>
-    <a href="{{ url_for('admin_logout') }}">🚪 Logout</a>
-</div>
-
-<!-- Main -->
-<div class="main">
-
-    <h1>⚙️ Admin Settings</h1>
-
-    <div class="card">
-
-        {% if message %}
-        <div class="message">{{ message }}</div>
-        {% endif %}
-
-        <form method="POST">
-
+        <div class="form-group">
             <label>Username</label>
             <input type="text" name="username" value="{{ admin.username }}" required>
+        </div>
 
+        <div class="form-group">
             <label>Password (leave blank to keep current)</label>
             <input type="password" name="password">
+        </div>
 
-            <label>Current Password</label>
-<input type="password" name="current_password" required>
+        <div class="form-group">
+            <label>Current Password (for verification)</label>
+            <input type="password" name="current_password" required>
+        </div>
 
-            <button type="submit">Update Settings</button>
+        <button type="submit">Update Settings</button>
 
-        </form>
-
-    </div>
+    </form>
 
 </div>
 
-</body>
-</html>
+{% endblock %}

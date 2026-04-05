@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}Admin{% endblock %}</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        /* 🔷 GLOBAL */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            color: white;
+        }
+
+        /* 🔷 SIDEBAR */
+        .sidebar {
+            width: 220px;
+            height: 100vh;
+            position: fixed;
+            background: #020617;
+            padding-top: 20px;
+            overflow-y: auto;
+            z-index: 100;
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 18px;
+        }
+
+        .sidebar a {
+            display: block;
+            padding: 12px 20px;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .sidebar a:hover {
+            background: #22c55e;
+            border-left: 3px solid white;
+            padding-left: 17px;
+        }
+
+        .sidebar a.active {
+            background: #22c55e;
+            border-left: 3px solid white;
+        }
+
+        /* 🔷 MAIN CONTENT */
+        .main {
+            margin-left: 220px;
+            padding: 30px;
+            min-height: 100vh;
+        }
+
+        .main h1 {
+            margin-bottom: 25px;
+            font-size: 28px;
+            font-weight: 600;
+        }
+
+        .main h2 {
+            margin-top: 30px;
+            margin-bottom: 15px;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        /* 🔷 CARDS */
+        .cards {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: #1e293b;
+            padding: 20px;
+            border-radius: 12px;
+            min-width: 200px;
+            text-align: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            background: #334155;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .card h3 {
+            margin-bottom: 10px;
+            color: #cbd5f5;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .card h2 {
+            font-size: 28px;
+            color: #22c55e;
+            margin: 0;
+        }
+
+        /* 🔷 CHARTS */
+        .charts {
+            display: flex;
+            gap: 30px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .chart-box {
+            background: #1e293b;
+            padding: 15px;
+            border-radius: 12px;
+            width: 300px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .chart-box h3 {
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .chart-box canvas {
+            width: 100% !important;
+            height: 220px !important;
+        }
+
+        /* 🔷 TABLE */
+        .table-container {
+            background: #1e293b;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #334155;
+        }
+
+        th {
+            background: #0f172a;
+            font-weight: 600;
+            color: #94a3b8;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        tr:nth-child(even) {
+            background: #1e293b;
+        }
+
+        tr:hover {
+            background: #334155;
+        }
+
+        /* 🔷 SEARCH BOX */
+        .search-box {
+            margin-bottom: 20px;
+        }
+
+        .search-box input {
+            padding: 10px 15px;
+            width: 100%;
+            max-width: 400px;
+            border-radius: 8px;
+            border: 1px solid #334155;
+            background: #0f172a;
+            color: white;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #22c55e;
+            box-shadow: 0 0 10px rgba(34, 197, 94, 0.3);
+        }
+
+        /* 🔷 BUTTONS */
+        .btn {
+            padding: 6px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            margin-right: 5px;
+            display: inline-block;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-view {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .btn-view:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+        }
+
+        .btn-delete {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+        }
+
+        .btn-download {
+            background: #22c55e;
+            color: white;
+        }
+
+        .btn-download:hover {
+            background: #16a34a;
+            transform: translateY(-2px);
+        }
+
+        /* 🔷 FORM */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: #cbd5f5;
+            font-weight: 500;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #334155;
+            background: #0f172a;
+            color: white;
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #22c55e;
+            box-shadow: 0 0 10px rgba(34, 197, 94, 0.3);
+        }
+
+        /* 🔷 IMAGE THUMBNAIL */
+        img {
+            width: 50px;
+            height: 50px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            object-fit: cover;
+        }
+
+        img:hover {
+            transform: scale(1.5);
+            z-index: 11;
+        }
+
+        /* 🔷 RESPONSIVE */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 70px;
+            }
+
+            .sidebar a {
+                padding: 12px 5px;
+                text-align: center;
+                font-size: 12px;
+            }
+
+            .main {
+                margin-left: 70px;
+                padding: 15px;
+            }
+
+            .charts {
+                flex-direction: column;
+            }
+
+            .chart-box {
+                width: 100%;
+            }
+
+            .cards {
+                flex-direction: column;
+            }
+
+            .card {
+                min-width: auto;
+            }
+        }
+
+        {% block extra_styles %}{% endblock %}
+    </style>
+</head>
+
+<body>
+
+<!-- 🔷 SIDEBAR -->
+<div class="sidebar">
+    <h2>🛠 Admin</h2>
+
+    <a href="{{ url_for('admin_dashboard') }}" class="{% block nav_dashboard %}{% endblock %}">📊 Dashboard</a>
+    <a href="{{ url_for('admin_users') }}" class="{% block nav_users %}{% endblock %}">👥 Users</a>
+    <a href="{{ url_for('admin_predictions') }}" class="{% block nav_predictions %}{% endblock %}">📜 Predictions</a>
+    <a href="{{ url_for('admin_analytics') }}" class="{% block nav_analytics %}{% endblock %}">📈 Analytics</a>
+    <a href="{{ url_for('admin_reports') }}" class="{% block nav_reports %}{% endblock %}">📂 Reports</a>
+    <a href="{{ url_for('admin_settings') }}" class="{% block nav_settings %}{% endblock %}">⚙ Settings</a>
+    <a href="{{ url_for('admin_logout') }}">🚪 Logout</a>
+</div>
+
+<!-- 🔷 MAIN CONTENT -->
+<div class="main">
+    {% block content %}{% endblock %}
+</div>
+
+{% block scripts %}{% endblock %}
+
+</body>
+</html>

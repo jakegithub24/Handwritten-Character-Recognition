@@ -1,233 +1,82 @@
-<!DOCTYPE html>
-<html>
-<head>
-<title>Admin Dashboard</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% extends "admin/base_admin.html" %}
 
-<style>
-body{
-    margin:0;
-    font-family:Poppins;
-    background:linear-gradient(135deg,#0f172a,#1e293b);
-    color:white;
-}
+{% block title %}Admin Dashboard{% endblock %}
 
-/* 🔷 SIDEBAR */
-.sidebar{
-    width:220px;
-    height:100vh;
-    position:fixed;
-    background:#020617;
-    padding-top:20px;
-}
+{% block nav_dashboard %}active{% endblock %}
 
-.sidebar h2{
-    text-align:center;
-    margin-bottom:30px;
-}
-
-.sidebar a{
-    display:block;
-    padding:12px 20px;
-    color:white;
-    text-decoration:none;
-}
-
-.sidebar a:hover{
-    background:#22c55e;
-}
-
-/* 🔷 MAIN */
-.main{
-    margin-left:220px;
-    padding:20px;
-}
-
-/* 🔷 CARDS */
-.cards{
-    display:flex;
-    gap:20px;
-    flex-wrap:wrap;
-}
-
-.card{
-    background:#1e293b;
-    padding:20px;
-    border-radius:12px;
-    width:200px;
-    text-align:center;
-    transition:0.3s;
-}
-
-.card:hover{
-    transform:translateY(-5px);
-    background:#334155;
-}
-
-/* 🔷 CHARTS */
-.charts{
-    display:flex;
-    gap:30px;
-    margin-top:30px;
-    flex-wrap:wrap;
-}
-
-canvas{
-    background:white;
-    padding:10px;
-    border-radius:10px;
-}
-
-/* 🔷 TABLE */
-table{
-    width:100%;
-    margin-top:30px;
-    border-collapse:collapse;
-}
-
-th,td{
-    padding:10px;
-    text-align:center;
-}
-
-th{
-    background:#020617;
-}
-
-tr:nth-child(even){
-    background:#1e293b;
-}
-</style>
-</head>
-
-<body>
-
-<!-- 🔷 SIDEBAR -->
-<div class="sidebar">
-    <h2>🛠 Admin</h2>
-
-    <a href="/admin_dashboard">📊 Dashboard</a>
-
-    <a href="/admin_users">👥 Users</a>
-
-    <a href="/admin/predictions">📜 Predictions</a>
-
-    <a href="/admin/analytics">📈 Analytics</a>
-
-    <a href="/admin/reports">📂 Reports</a>
-
-    <a href="/admin/settings">⚙ Settings</a>
-
-    <a href="/admin_logout">🚪 Logout</a>
-</div>
-
-<!-- 🔷 MAIN -->
-<div class="main">
+{% block content %}
 
 <h1>Welcome Admin 👑</h1>
 
-<!-- 🔷 CARDS -->
+<!-- 🔷 STATS CARDS -->
 <div class="cards">
+    <div class="card">
+        <h3>Total Users</h3>
+        <h2>{{ total_users }}</h2>
+    </div>
 
-<div class="card">
-<h3>Total Users</h3>
-<h2>{{ total_users }}</h2>
+    <div class="card">
+        <h3>Total Predictions</h3>
+        <h2>{{ total_predictions }}</h2>
+    </div>
+
+    <div class="card">
+        <h3>Most Predicted Digit</h3>
+        <h2>{{ most_digit }}</h2>
+    </div>
+
+    <div class="card">
+        <h3>Highest Confidence</h3>
+        <h2>{{ highest_pred }}%</h2>
+    </div>
 </div>
 
-<div class="card">
-<h3>Total Predictions</h3>
-<h2>{{ total_predictions }}</h2>
-</div>
-
-<div class="card">
-<h3>Most Digit</h3>
-<h2>{{ most_digit }}</h2>
-</div>
-
-<div class="card">
-<h3>Max Confidence</h3>
-<h2>{{ highest_pred }}%</h2>
-</div>
-
-</div>
-
-<!-- 🔷 CHARTS -->
+<!-- 🔷 CHARTS SECTION -->
+<h2>📊 Analytics Overview</h2>
 <div class="charts">
+    <div class="chart-box">
+        <h3>Digit Frequency</h3>
+        <canvas id="barChart"></canvas>
+    </div>
 
-<div>
-<h3>Digit Frequency</h3>
-<canvas id="barChart"></canvas>
+    <div class="chart-box">
+        <h3>Distribution</h3>
+        <canvas id="pieChart"></canvas>
+    </div>
 </div>
 
-<div>
-<h3>Distribution</h3>
-<canvas id="pieChart"></canvas>
-</div>
+{% endblock %}
 
-</div>
-
-<!-- 🔷 USERS TABLE -->
-<h2>👥 Users</h2>
-<table>
-<tr>
-<th>ID</th>
-<th>Name</th>
-<th>Email</th>
-</tr>
-
-{% for u in users %}
-<tr>
-<td>{{ u.id }}</td>
-<td>{{ u.name }}</td>
-<td>{{ u.email }}</td>
-</tr>
-{% endfor %}
-</table>
-
-<!-- 🔷 PREDICTIONS TABLE -->
-<h2>📜 Predictions</h2>
-<table>
-<tr>
-<th>ID</th>
-<th>User</th>
-<th>Digit</th>
-<th>Confidence</th>
-<th>Date</th>
-</tr>
-
-{% for p in predictions %}
-<tr>
-<td>{{ p.id }}</td>
-<td>{{ p.user_id }}</td>
-<td>{{ p.predicted_digit }}</td>
-<td>{{ p.confidence }}</td>
-<td>{{ p.created_at }}</td>
-</tr>
-{% endfor %}
-</table>
-
-</div>
+{% block scripts %}
 
 <script>
-let digits = {{ digits | tojson }};
-let counts = {{ counts | tojson }};
+    let digits = {{ digits | tojson }};
+    let counts = {{ counts | tojson }};
 
-new Chart(document.getElementById("barChart"), {
-    type:'bar',
-    data:{
-        labels:digits,
-        datasets:[{data:counts, backgroundColor:'#22c55e'}]
-    }
-});
+    // 🟢 BAR CHART
+    new Chart(document.getElementById("barChart"), {
+        type: 'bar',
+        data: {
+            labels: digits,
+            datasets: [{
+                label: 'Count',
+                data: counts,
+                backgroundColor: '#22c55e'
+            }]
+        }
+    });
 
-new Chart(document.getElementById("pieChart"), {
-    type:'pie',
-    data:{
-        labels:digits,
-        datasets:[{data:counts}]
-    }
-});
+    // 🟣 PIE CHART
+    new Chart(document.getElementById("pieChart"), {
+        type: 'pie',
+        data: {
+            labels: digits,
+            datasets: [{
+                data: counts,
+                backgroundColor: ['#ef4444', '#f97316', '#eab308', '#22c55e', '#3b82f6', '#8b5cf6', '#ec4899', '#14b8a6', '#64748b', '#6366f1']
+            }]
+        }
+    });
 </script>
 
-</body>
-</html>
+{% endblock %}

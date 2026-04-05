@@ -1,86 +1,45 @@
-<!DOCTYPE html>
-<html>
-<head>
-<title>User Details</title>
+{% extends "admin/base_admin.html" %}
 
-<style>
-body{
-    font-family:Poppins;
-    background:#0f172a;
-    color:white;
-    margin:0;
-}
+{% block title %}User Details{% endblock %}
 
-.main{
-    padding:20px;
-}
-
-/* CARD */
-.card{
-    background:#1e293b;
-    padding:20px;
-    border-radius:10px;
-    margin-bottom:20px;
-}
-
-/* TABLE */
-table{
-    width:100%;
-    border-collapse:collapse;
-}
-
-th,td{
-    padding:10px;
-    text-align:center;
-}
-
-th{
-    background:#020617;
-}
-
-tr:nth-child(even){
-    background:#1e293b;
-}
-</style>
-</head>
-
-<body>
-
-<div class="main">
+{% block content %}
 
 <h1>👤 User Details</h1>
 
+<!-- 🔷 USER INFO CARD -->
 <div class="card">
-<p><b>ID:</b> {{ user.id }}</p>
-<p><b>Name:</b> {{ user.name }}</p>
-<p><b>Email:</b> {{ user.email }}</p>
-<p><b>Joined:</b> {{ user.created_at }}</p>
+    <p><strong>ID:</strong> {{ user.id }}</p>
+    <p><strong>Name:</strong> {{ user.name }}</p>
+    <p><strong>Email:</strong> {{ user.email }}</p>
+    <p><strong>Account Created:</strong> {{ user.created_at }}</p>
 </div>
 
-<h2>📜 User Predictions</h2>
+<!-- 🔷 USER PREDICTIONS TABLE -->
+<h2>📜 Prediction History</h2>
 
-<table>
-<tr>
-<th>ID</th>
-<th>Digit</th>
-<th>Confidence</th>
-<th>Type</th>
-<th>Date</th>
-</tr>
-
-{% for p in predictions %}
-<tr>
-<td>{{ p.id }}</td>
-<td>{{ p.predicted_digit }}</td>
-<td>{{ p.confidence }}</td>
-<td>{{ p.prediction_type }}</td>
-<td>{{ p.created_at }}</td>
-</tr>
-{% endfor %}
-
-</table>
-
+<div class="table-container">
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Digit</th>
+                <th>Confidence</th>
+                <th>Type</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in predictions %}
+            <tr>
+                <td>{{ p.id }}</td>
+                <td>{{ p.predicted_digit }}</td>
+                <td>{{ p.confidence }}%</td>
+                <td>{{ p.prediction_type }}</td>
+                <td>{{ p.created_at }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </div>
 
-</body>
-</html>
+{% endblock %}

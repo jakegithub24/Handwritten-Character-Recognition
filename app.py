@@ -687,7 +687,21 @@ def admin_analytics():
 
 @app.route('/admin/reports')
 def admin_reports():
-    return render_template("admin/admin_reports.html")
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute("""
+        SELECT p.*, u.name AS user_name FROM predictions p
+        LEFT JOIN users u ON p.user_id = u.id
+        ORDER BY p.id DESC
+    """)
+    predictions = []
+    for row in cursor.fetchall():
+        r = dict(row)
+        if 'created_at' in r and r['created_at']:
+            if not isinstance(r['created_at'], str):
+                r['created_at'] = str(r['created_at'])
+        predictions.append(r)
+    return render_template("admin/admin_reports.html", predictions=predictions)
 
 @app.route('/admin/predictions')
 def admin_predictions():
