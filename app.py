@@ -23,6 +23,26 @@ init_db()
 UPLOAD_FOLDER = app.config['UPLOAD_FOLDER']
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
+# ------------------- CACHE PREVENTION FOR AUTHENTICATED PAGES -------------------
+@app.after_request
+def prevent_cache_for_authenticated_pages(response):
+    """
+    Prevent caching of authenticated pages to force re-authentication on logout.
+    This ensures that when a user logs out, the back button won't show cached
+    versions of protected pages with sensitive data.
+    """
+    # Check if user or admin is logged in
+    is_user_authenticated = 'user_id' in session
+    is_admin_authenticated = 'admin_username' in session
+    
+    # Only prevent caching for authenticated sessions
+    if is_user_authenticated or is_admin_authenticated:
+        response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0, private'
+        response.headers['Pragma'] = 'no-cache'
+        response.headers['Expires'] = '0'
+    
+    return response
+
 # ------------------- HOME -------------------
 @app.route('/')
 def home():
@@ -76,6 +96,8 @@ def predict_page():
 
 @app.route('/predict', methods=['POST'])
 def predict():
+    if 'user_id' not in session:
+        return jsonify({"error": "Unauthorized"}), 401
     if 'image' not in request.files:
         return jsonify({"error": "No file uploaded"}), 400
     file = request.files['image']
@@ -93,6 +115,8 @@ def predict():
 
 @app.route("/predict_canvas", methods=["POST"])
 def predict_canvas():
+    if 'user_id' not in session:
+        return jsonify({"error": "Unauthorized"}), 401
     data = request.get_json()
     result = predict_digit_from_canvas(data["image"])
     db = get_db()
@@ -104,6 +128,8 @@ def predict_canvas():
 
 @app.route('/predict_voice', methods=['POST'])
 def predict_voice():
+    if 'user_id' not in session:
+        return jsonify({"error": "Unauthorized"}), 401
     if 'voice' not in request.files:
         return jsonify({"error": "No voice file"}), 400
     file = request.files['voice']
@@ -130,8 +156,15 @@ def history():
 
 @app.route('/delete/<int:id>')
 def delete(id):
+    if 'user_id' not in session:
+        return redirect('/login_page')
     db = get_db()
     cursor = db.cursor()
+    # Verify the prediction belongs to the current user before deleting
+    cursor.execute("SELECT * FROM predictions WHERE id = ? AND user_id = ?", (id, session['user_id']))
+    prediction = cursor.fetchone()
+    if not prediction:
+        return "Prediction not found or access denied", 404
     cursor.execute("DELETE FROM predictions WHERE id = ?", (id,))
     db.commit()
     return redirect('/history')
@@ -232,6 +265,8 @@ def delete_account():
 # ------------------- DOWNLOAD ROUTES (unchanged logic, just SQLite) -------------------
 @app.route('/download')
 def download_page():
+    if 'user_id' not in session:
+        return redirect('/login_page')
     return render_template("user/download.html")
 
 @app.route('/download/<path:filepath>')
@@ -659,6 +694,8 @@ def admin_dashboard():
 # --- Additional Admin Routes for Sidebar Navigation ---
 @app.route('/admin/users')
 def admin_users():
+    if 'admin_username' not in session:
+        return redirect('/admin')
     db = get_db()
     cursor = db.cursor()
     cursor.execute("SELECT * FROM users")
@@ -667,6 +704,8 @@ def admin_users():
 
 @app.route('/admin/analytics')
 def admin_analytics():
+    if 'admin_username' not in session:
+        return redirect('/admin')
     db = get_db()
     cursor = db.cursor()
     cursor.execute("SELECT COUNT(*) as total_users FROM users")
@@ -687,6 +726,8 @@ def admin_analytics():
 
 @app.route('/admin/reports')
 def admin_reports():
+    if 'admin_username' not in session:
+        return redirect('/admin')
     db = get_db()
     cursor = db.cursor()
     cursor.execute("""
@@ -705,6 +746,8 @@ def admin_reports():
 
 @app.route('/admin/predictions')
 def admin_predictions():
+    if 'admin_username' not in session:
+        return redirect('/admin')
     db = get_db()
     cursor = db.cursor()
     cursor.execute("""
@@ -725,12 +768,16 @@ def admin_predictions():
 
 @app.route('/admin/settings')
 def admin_settings():
+    if 'admin_username' not in session:
+        return redirect('/admin')
     # Dummy admin object for template rendering
     admin = type('Admin', (), {'username': 'admin'})()
     return render_template("admin/admin_settings.html", admin=admin, message=None)
 
 @app.route('/admin/view_user/<int:user_id>')
 def view_user(user_id):
+    if 'admin_username' not in session:
+        return redirect('/admin')
     db = get_db()
     cursor = db.cursor()
     cursor.execute("SELECT * FROM users WHERE id = ?", (user_id,))
