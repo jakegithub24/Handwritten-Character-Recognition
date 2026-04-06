@@ -38,6 +38,7 @@
                     <a href="{{ url_for('view_user', user_id=u.id) }}">
                         <button class="btn btn-view">View</button>
                     </a>
+                    <button class="btn btn-delete" onclick="deleteUser({{ u.id }}, '{{ u.name }}')">Delete</button>
                 </td>
             </tr>
             {% endfor %}
@@ -61,6 +62,54 @@ input.addEventListener("keyup", function(){
         row.style.display = text.includes(filter) ? "" : "none";
     });
 });
+
+async function deleteUser(userId, userName) {
+    if (confirm(`Are you sure you want to delete user "${userName}" and all their predictions? This action cannot be undone.`)) {
+        try {
+            let res = await fetch(`/admin/delete_user/${userId}`, {method: 'POST'});
+            let data = await res.json();
+            if (data.success) {
+                alert('User deleted successfully');
+                location.reload();
+            } else {
+                alert(data.error || 'Error deleting user');
+            }
+        } catch (err) {
+            alert('Error: ' + err.message);
+        }
+    }
+}
 </script>
+
+<style>
+.btn-delete {
+    background: #ef4444;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    margin-left: 5px;
+}
+
+.btn-delete:hover {
+    background: #dc2626;
+}
+
+.btn-view {
+    background: #3b82f6;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.btn-view:hover {
+    background: #2563eb;
+}
+</style>
 
 {% endblock %}

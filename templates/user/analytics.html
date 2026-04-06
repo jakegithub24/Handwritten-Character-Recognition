@@ -238,14 +238,22 @@ let pieChart = new Chart(document.getElementById("pieChart"), {
     options:{responsive:true}
 });
 
-// 🔹 FILTER FUNCTION (JS Example)
+// 🔹 FILTER FUNCTION - Reload page with filters applied
 function applyFilters(){
     let type = document.getElementById("filterType").value;
     let start = document.getElementById("startDate").value;
     let end = document.getElementById("endDate").value;
 
-    // You can later send these values via AJAX to backend for filtered data
-    alert(`Filters Applied\nType: ${type}\nStart: ${start}\nEnd: ${end}`);
+    // Build query string
+    let params = new URLSearchParams();
+    if (type !== 'all') params.append('type', type);
+    if (start) params.append('start', start);
+    if (end) params.append('end', end);
+    
+    // Reload page with parameters (optional - or you can use AJAX)
+    if (params.toString()) {
+        window.location.href = '/analytics?' + params.toString();
+    }
 }
 
 // 🔹 EXPORT CHARTS FUNCTION

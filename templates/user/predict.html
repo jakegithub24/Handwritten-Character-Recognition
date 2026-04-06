@@ -165,7 +165,9 @@
     <!-- Voice -->
     <div class="box">
         <h3>🎤 Voice Input</h3>
-        <button onclick="voice()">Start</button>
+        <div id="voiceStatus" style="font-size: 12px; color: #cbd5f5; margin: 5px 0;">Ready</div>
+        <button id="startBtn" onclick="startRecording()" style="background: #22c55e;">Start Recording</button>
+        <button id="stopBtn" onclick="stopRecording()" style="background: #ef4444; display: none;">Stop Recording</button>
     </div>
 </div>
 
@@ -230,6 +232,7 @@ function predictCanvas(){
         "Digit: "+data.digit+" | Confidence: "+data.confidence+"%";
     });
 }
+
 // Upload image
 function upload(){
     let file = document.getElementById("file").files[0];
@@ -248,16 +251,139 @@ function upload(){
     });
 }
 
-// Voice placeholder
-function voice(){
-    let recognition = new webkitSpeechRecognition();
-    recognition.start();
+// Voice recording variables
+let mediaRecorder;
+let audioChunks = [];
+let recordingStartTime;
+let recordingTimer;
 
-    recognition.onresult = function(e){
-        let text = e.results[0][0].transcript;
-        document.getElementById("result").innerText =
-        "You said: "+text;
+// Start recording
+async function startRecording(){
+    try {
+        // Request microphone access with specific audio constraints
+        const stream = await navigator.mediaDevices.getUserMedia({ 
+            audio: {
+                echoCancellation: true,
+                noiseSuppression: true,
+                autoGainControl: true,
+                sampleRate: 16000
+            } 
+        });
+        
+        // Create MediaRecorder with specific options for WAV
+        const options = {
+            mimeType: 'audio/wav',
+            audioBitsPerSecond: 128000
+        };
+        
+        // Fallback if WAV is not supported
+        if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+            console.log("WAV not supported, using default");
+            mediaRecorder = new MediaRecorder(stream);
+        } else {
+            mediaRecorder = new MediaRecorder(stream, options);
+        }
+        
+        audioChunks = [];
+        recordingStartTime = Date.now();
+        
+        // Collect audio data
+        mediaRecorder.ondataavailable = (event) => {
+            console.log("Audio chunk received:", event.data.size);
+            audioChunks.push(event.data);
+        };
+        
+        mediaRecorder.onstop = () => {
+            console.log("Recording stopped. Total chunks:", audioChunks.length);
+            // Create audio blob
+            const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+            console.log("Audio blob size:", audioBlob.size);
+            sendAudioToBackend(audioBlob);
+        };
+        
+        mediaRecorder.onerror = (event) => {
+            console.error("MediaRecorder error:", event.error);
+            document.getElementById("result").innerText = "Recording error: " + event.error;
+            document.getElementById("voiceStatus").innerText = "Ready";
+            document.getElementById("voiceStatus").style.color = "#cbd5f5";
+        };
+        
+        mediaRecorder.start();
+        
+        // Update UI
+        document.getElementById("startBtn").style.display = "none";
+        document.getElementById("stopBtn").style.display = "block";
+        document.getElementById("voiceStatus").innerText = "🔴 Recording...";
+        document.getElementById("voiceStatus").style.color = "#ef4444";
+        
+        // Start timer display
+        let seconds = 0;
+        recordingTimer = setInterval(() => {
+            seconds++;
+            document.getElementById("voiceStatus").innerText = `🔴 Recording... ${seconds}s`;
+        }, 1000);
+        
+    } catch (err) {
+        alert("Microphone access denied or not available: " + err.message);
+        console.error("Error accessing microphone:", err);
+        document.getElementById("voiceStatus").innerText = "Mic access denied";
+        document.getElementById("voiceStatus").style.color = "#ef4444";
     }
+}
+
+// Stop recording
+function stopRecording(){
+    if (mediaRecorder && mediaRecorder.state !== "inactive") {
+        mediaRecorder.stop();
+        
+        // Stop the audio stream
+        mediaRecorder.stream.getTracks().forEach(track => track.stop());
+        
+        // Clear timer
+        clearInterval(recordingTimer);
+        
+        // Update UI
+        document.getElementById("startBtn").style.display = "block";
+        document.getElementById("stopBtn").style.display = "none";
+        document.getElementById("voiceStatus").innerText = "Processing...";
+        document.getElementById("voiceStatus").style.color = "#f59e0b";
+    }
+}
+
+// Send audio to backend
+function sendAudioToBackend(audioBlob){
+    console.log("Sending audio blob, size:", audioBlob.size);
+    
+    let formData = new FormData();
+    formData.append("voice", audioBlob, "recording.wav");
+    
+    fetch("/predict_voice", {
+        method: "POST",
+        body: formData
+    })
+    .then(res => {
+        console.log("Response status:", res.status);
+        return res.json();
+    })
+    .then(data => {
+        console.log("Received data:", data);
+        if(data.error) {
+            document.getElementById("result").innerText = "Error: " + data.error;
+            document.getElementById("voiceStatus").innerText = "Ready";
+            document.getElementById("voiceStatus").style.color = "#cbd5f5";
+        } else {
+            document.getElementById("result").innerText = 
+                "Digit: " + data.digit + " | Confidence: " + data.confidence + "%";
+            document.getElementById("voiceStatus").innerText = "✅ Done";
+            document.getElementById("voiceStatus").style.color = "#22c55e";
+        }
+    })
+    .catch(err => {
+        console.error("Error:", err);
+        document.getElementById("result").innerText = "Error processing voice: " + err.message;
+        document.getElementById("voiceStatus").innerText = "Ready";
+        document.getElementById("voiceStatus").style.color = "#cbd5f5";
+    });
 }
 </script>
 

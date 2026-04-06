@@ -56,10 +56,73 @@ def predict_digit_from_canvas(img_data):
 
 def predict_digit_from_voice(audio_path):
     """
-    Predict digit from voice recording.
-    Currently returns a random digit – replace with actual speech recognition.
+    Predict digit from voice recording using speech recognition.
+    Converts audio to text and extracts the digit mentioned.
     """
-    import random
-    digit = random.randint(0, 9)
-    confidence = round(random.uniform(80, 100), 2)
-    return digit, confidence
+    import speech_recognition as sr
+    import librosa
+    import soundfile as sf
+    
+    try:
+        # Load audio file with librosa
+        audio_data, sr_rate = librosa.load(audio_path, sr=16000)
+        
+        # Convert to 16-bit PCM format that speech_recognition expects
+        audio_data_int16 = (audio_data * 32767).astype(np.int16)
+        
+        # Save as WAV with proper format
+        temp_wav = audio_path.replace('.wav', '_converted.wav')
+        sf.write(temp_wav, audio_data_int16, 16000)
+        
+        # Now use speech_recognition with the converted file
+        recognizer = sr.Recognizer()
+        with sr.AudioFile(temp_wav) as source:
+            audio = recognizer.record(source)
+        
+        # Try Google Speech Recognition
+        try:
+            text = recognizer.recognize_google(audio, language='en-US').lower()
+            print(f"[DEBUG] Recognized text: {text}")
+        except sr.UnknownValueError:
+            print("[DEBUG] Speech not understood")
+            return 0, 30.0
+        except sr.RequestError as e:
+            print(f"[DEBUG] API error: {e}")
+            return 0, 20.0
+        
+        # Extract digit from recognized text (handles "zero", "one", "two", etc.)
+        digit_words = {
+            'zero': 0, 'one': 1, 'two': 2, 'three': 3, 'four': 4,
+            'five': 5, 'six': 6, 'seven': 7, 'eight': 8, 'nine': 9
+        }
+        
+        # Try to find digit word in recognized text
+        for word, digit in digit_words.items():
+            if word in text:
+                print(f"[DEBUG] Found digit word: {word} -> {digit}")
+                # Clean up temp file
+                if os.path.exists(temp_wav):
+                    os.remove(temp_wav)
+                return digit, 85.0
+        
+        # If no digit word found, check for direct numbers
+        for char in text:
+            if char.isdigit():
+                print(f"[DEBUG] Found digit character: {char}")
+                # Clean up temp file
+                if os.path.exists(temp_wav):
+                    os.remove(temp_wav)
+                return int(char), 80.0
+        
+        # If nothing found but something was recognized
+        print(f"[DEBUG] No digit found in text: {text}")
+        # Clean up temp file
+        if os.path.exists(temp_wav):
+            os.remove(temp_wav)
+        return 0, 50.0
+        
+    except Exception as e:
+        print(f"[ERROR] Voice recognition error: {type(e).__name__}: {e}")
+        import traceback
+        traceback.print_exc()
+        return 0, 10.0

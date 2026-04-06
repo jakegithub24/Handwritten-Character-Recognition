@@ -47,7 +47,16 @@
 
             <input id="password" name="password" type="password" placeholder="Enter Password" required>
 
-            <i class="fa fa-eye toggle-pass" onclick="togglePassword()"></i>
+            <i class="fa fa-eye toggle-pass" onclick="togglePassword('password')"></i>
+        </div>
+
+        <!-- CONFIRM PASSWORD -->
+        <div class="input-box">
+            <i class="fa fa-lock"></i>
+
+            <input id="confirm_password" name="confirm_password" type="password" placeholder="Confirm Password" required>
+
+            <i class="fa fa-eye toggle-pass" onclick="togglePassword('confirm_password')"></i>
         </div>
 
         <!-- BUTTON -->
@@ -63,10 +72,21 @@
 
 <!-- JS -->
 <script>
-function togglePassword() {
-    var x = document.getElementById("password");
+function togglePassword(id) {
+    var x = document.getElementById(id);
     x.type = (x.type === "password") ? "text" : "password";
 }
+
+document.querySelector('form').onsubmit = function(e) {
+    let password = document.getElementById('password').value;
+    let confirm_password = document.getElementById('confirm_password').value;
+    
+    if (password !== confirm_password) {
+        e.preventDefault();
+        alert('Passwords do not match!');
+        return false;
+    }
+};
 </script>
 
 </body>

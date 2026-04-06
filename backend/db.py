@@ -2,7 +2,22 @@ import sqlite3
 import os
 from werkzeug.security import generate_password_hash
 
+
+import os
+from pathlib import Path
+
 DB_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'database', 'digit.db')
+DB_PATH = 'instance/database.db'   # or your actual path
+
+def get_db():
+    # Ensure the directory exists
+    db_dir = os.path.dirname(DB_PATH)
+    if db_dir:
+        Path(db_dir).mkdir(parents=True, exist_ok=True)
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    return conn
+
 
 def get_db():
     conn = sqlite3.connect(DB_PATH)

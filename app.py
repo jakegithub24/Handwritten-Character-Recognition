@@ -132,15 +132,27 @@ def predict_voice():
         return jsonify({"error": "Unauthorized"}), 401
     if 'voice' not in request.files:
         return jsonify({"error": "No voice file"}), 400
+    
     file = request.files['voice']
-    path = os.path.join(UPLOAD_FOLDER, file.filename)
+    
+    # Ensure filename ends with .wav
+    filename = file.filename
+    if not filename.endswith('.wav'):
+        filename = filename.split('.')[0] + '_' + str(session['user_id']) + '.wav'
+    
+    path = os.path.join(UPLOAD_FOLDER, filename)
     file.save(path)
+    
+    print(f"[INFO] Saved voice file: {path}")
+    
     digit, confidence = predict_digit_from_voice(path)
+    
     db = get_db()
     cursor = db.cursor()
     cursor.execute("INSERT INTO predictions (user_id, prediction_type, image_path, predicted_digit, confidence) VALUES (?, ?, ?, ?, ?)",
                    (session['user_id'], 'voice', path, int(digit), float(confidence)))
     db.commit()
+    
     return jsonify({"digit": digit, "confidence": confidence, "audio": path})
 
 # ------------------- USER HISTORY & ANALYTICS -------------------
@@ -175,14 +187,51 @@ def analytics():
         return redirect('/login_page')
     db = get_db()
     cursor = db.cursor()
-    cursor.execute("SELECT COUNT(*) as total FROM predictions WHERE user_id = ?", (session['user_id'],))
+    
+    # Get filter parameters
+    filter_type = request.args.get('type', '')
+    start_date = request.args.get('start', '')
+    end_date = request.args.get('end', '')
+    
+    # Build base query
+    base_query = "SELECT * FROM predictions WHERE user_id = ?"
+    count_query = "SELECT COUNT(*) as total FROM predictions WHERE user_id = ?"
+    params = [session['user_id']]
+    count_params = [session['user_id']]
+    
+    # Add type filter
+    if filter_type and filter_type != 'all':
+        db_type = 'upload' if filter_type == 'image' else filter_type
+        base_query += " AND prediction_type = ?"
+        count_query += " AND prediction_type = ?"
+        params.append(db_type)
+        count_params.append(db_type)
+    
+    # Add date filters
+    if start_date:
+        base_query += " AND DATE(created_at) >= ?"
+        count_query += " AND DATE(created_at) >= ?"
+        params.append(start_date)
+        count_params.append(start_date)
+    if end_date:
+        base_query += " AND DATE(created_at) <= ?"
+        count_query += " AND DATE(created_at) <= ?"
+        params.append(end_date)
+        count_params.append(end_date)
+    
+    # Get total count
+    cursor.execute(count_query, tuple(count_params))
     total = cursor.fetchone()['total']
-    cursor.execute("SELECT predicted_digit, COUNT(*) as count FROM predictions WHERE user_id = ? GROUP BY predicted_digit", (session['user_id'],))
+    
+    # Get digit statistics
+    digit_query = base_query + " GROUP BY predicted_digit"
+    cursor.execute(digit_query, tuple(params))
     rows = cursor.fetchall()
     digits = [str(r['predicted_digit']) for r in rows]
     counts = [r['count'] for r in rows]
     most_digit = digits[counts.index(max(counts))] if counts else 0
     accuracy = round((sum(counts)/total)*100, 2) if total>0 else 0
+    
     return render_template("user/analytics.html", total=total, most_digit=most_digit, accuracy=accuracy, digits=digits, counts=counts)
 
 @app.route('/top_predictions')
@@ -228,11 +277,7 @@ def profile():
         return redirect('/login_page')
     db = get_db()
     cursor = db.cursor()
-    if request.method == 'POST':
-        name = request.form['name']
-        cursor.execute("UPDATE users SET name = ? WHERE id = ?", (name, session['user_id']))
-        db.commit()
-        session['user_name'] = name
+    # Profile page is GET only now - name cannot be edited
     cursor.execute("SELECT * FROM users WHERE id = ?", (session['user_id'],))
     user = cursor.fetchone()
     cursor.execute("SELECT COUNT(*) as total FROM predictions WHERE user_id = ?", (session['user_id'],))
@@ -258,6 +303,23 @@ def change_password():
 def delete_account():
     if 'user_id' not in session:
         return jsonify({"error": "Unauthorized"}), 401
+    
+    # Get password from request for verification
+    password = request.form.get('password') or request.get_json().get('password')
+    
+    if not password:
+        return jsonify({"error": "Password required for account deletion"}), 400
+    
+    # Verify password
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute("SELECT password FROM users WHERE id = ?", (session['user_id'],))
+    user = cursor.fetchone()
+    
+    if not user or not check_password_hash(user['password'], password):
+        return jsonify({"error": "Incorrect password"}), 401
+    
+    # Delete account if password is correct
     delete_user_account(session['user_id'])
     session.clear()
     return jsonify({"success": True})
@@ -451,6 +513,47 @@ def download_filtered_type():
     filename = f"predictions_filtered_{pred_type}_{digit}.csv" if digit else f"predictions_filtered_{pred_type}.csv"
     return Response(output.getvalue(), mimetype="text/csv",
                    headers={"Content-Disposition": f"attachment;filename={filename}"})
+
+@app.route('/download/canvas_image/<int:prediction_id>')
+def download_canvas_image(prediction_id):
+    """Download a canvas prediction as an image"""
+    if 'user_id' not in session:
+        return redirect('/login_page')
+    
+    try:
+        db = get_db()
+        cursor = db.cursor()
+        
+        # Get prediction
+        cursor.execute(
+            "SELECT * FROM predictions WHERE id = ? AND user_id = ? AND prediction_type = 'draw'",
+            (prediction_id, session['user_id'])
+        )
+        prediction = cursor.fetchone()
+        
+        if not prediction:
+            return "Canvas image not found", 404
+        
+        # Create a simple image file with the prediction info
+        from PIL import Image, ImageDraw
+        
+        # Create placeholder image with prediction info
+        img = Image.new('RGB', (400, 300), color=(255, 255, 255))
+        draw = ImageDraw.Draw(img)
+        
+        text = f"Digit Prediction: {prediction['predicted_digit']}\nConfidence: {prediction['confidence']}%\nDate: {prediction['created_at']}"
+        draw.text((50, 50), text, fill=(0, 0, 0))
+        
+        # Save to bytes
+        img_io = io.BytesIO()
+        img.save(img_io, 'PNG')
+        img_io.seek(0)
+        
+        return send_file(img_io, mimetype='image/png',
+                        as_attachment=True, download_name=f'canvas_prediction_{prediction_id}.png')
+    
+    except Exception as e:
+        return str(e), 400
 
 @app.route('/download_images')
 def download_images():
@@ -766,13 +869,36 @@ def admin_predictions():
         predictions.append(r)
     return render_template("admin/admin_predictions.html", predictions=predictions)
 
-@app.route('/admin/settings')
+@app.route('/admin/settings', methods=['GET', 'POST'])
 def admin_settings():
     if 'admin_username' not in session:
         return redirect('/admin')
+    
+    message = None
+    if request.method == 'POST':
+        current_password = request.form.get('current_password')
+        new_password = request.form.get('password')
+        
+        # Verify current password
+        db = get_db()
+        cursor = db.cursor()
+        cursor.execute("SELECT password FROM admin WHERE username = ?", (session['admin_username'],))
+        admin = cursor.fetchone()
+        
+        if not admin or not check_password_hash(admin['password'], current_password):
+            message = "Current password is incorrect"
+        elif new_password:
+            # Update password
+            hashed_new = generate_password_hash(new_password)
+            cursor.execute("UPDATE admin SET password = ? WHERE username = ?", (hashed_new, session['admin_username']))
+            db.commit()
+            message = "Password updated successfully"
+        else:
+            message = "Please enter a new password"
+    
     # Dummy admin object for template rendering
     admin = type('Admin', (), {'username': 'admin'})()
-    return render_template("admin/admin_settings.html", admin=admin, message=None)
+    return render_template("admin/admin_settings.html", admin=admin, message=message)
 
 @app.route('/admin/view_user/<int:user_id>')
 def view_user(user_id):
@@ -785,6 +911,27 @@ def view_user(user_id):
     cursor.execute("SELECT * FROM predictions WHERE user_id = ?", (user_id,))
     predictions = cursor.fetchall()
     return render_template("admin/view_user.html", user=user, predictions=predictions)
+
+@app.route('/admin/delete_user/<int:user_id>', methods=['POST'])
+def delete_user_by_admin(user_id):
+    """Admin endpoint to delete a user and all their predictions"""
+    if 'admin_username' not in session:
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    try:
+        db = get_db()
+        cursor = db.cursor()
+        
+        # Delete all predictions for this user first
+        cursor.execute("DELETE FROM predictions WHERE user_id = ?", (user_id,))
+        
+        # Delete the user
+        cursor.execute("DELETE FROM users WHERE id = ?", (user_id,))
+        db.commit()
+        
+        return jsonify({"success": True, "message": "User deleted successfully"})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
 
 # ------------------- LOGOUT -------------------
 @app.route('/logout')

@@ -2,11 +2,11 @@
 {% block content %}
 <div class="glass-card">
     <h2><i class="fas fa-user-circle"></i> My Profile</h2>
-    <form method="POST" id="updateNameForm">
-        <label>Name</label>
-        <input type="text" name="name" value="{{ user.name }}" required>
-        <button type="submit">Update Name</button>
-    </form>
+    <div style="margin-bottom: 20px;">
+        <label style="font-weight: bold;">Name</label>
+        <p style="margin: 5px 0; padding: 10px; background: rgba(255,255,255,0.1); border-radius: 8px;">{{ user.name }}</p>
+        <small style="opacity: 0.7;">Name cannot be changed. Please contact support if you need to update it.</small>
+    </div>
 
     <hr>
 
@@ -14,6 +14,7 @@
     <form id="changePwdForm">
         <input type="password" name="old_password" placeholder="Current Password" required>
         <input type="password" name="new_password" placeholder="New Password" required>
+        <input type="password" name="confirm_password" placeholder="Confirm New Password" required>
         <button type="submit">Change Password</button>
     </form>
 
@@ -26,16 +27,44 @@
 <script>
     document.getElementById('changePwdForm').onsubmit = async (e) => {
         e.preventDefault();
+        
+        let new_pwd = document.querySelector('input[name="new_password"]').value;
+        let confirm_pwd = document.querySelector('input[name="confirm_password"]').value;
+        
+        if (new_pwd !== confirm_pwd) {
+            alert('New passwords do not match!');
+            return;
+        }
+        
         let formData = new FormData(e.target);
         let res = await fetch('/change_password', {method: 'POST', body: formData});
         let data = await res.json();
-        alert(data.error || 'Password changed successfully!');
+        if (data.success) {
+            alert('Password changed successfully!');
+            e.target.reset();
+        } else {
+            alert(data.error || 'Error changing password');
+        }
     };
+    
     document.getElementById('deleteAccountBtn').onclick = async () => {
-        if (confirm('Permanently delete your account? All predictions will be lost.')) {
-            let res = await fetch('/delete_account', {method: 'POST'});
-            let data = await res.json();
-            if (data.success) window.location.href = '/';
+        if (!confirm('Are you sure? This will permanently delete your account and all predictions. This action cannot be undone.')) {
+            return;
+        }
+        
+        let password = prompt('Enter your password to confirm account deletion:');
+        if (!password) return;
+        
+        let formData = new FormData();
+        formData.append('password', password);
+        
+        let res = await fetch('/delete_account', {method: 'POST', body: formData});
+        let data = await res.json();
+        if (data.success) {
+            alert('Account deleted successfully. Redirecting to home...');
+            window.location.href = '/';
+        } else {
+            alert(data.error || 'Error deleting account');
         }
     };
 </script>
